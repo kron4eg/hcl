@@ -1,8 +1,3 @@
-// +build !windows
-// TODO(jen20): These need fixing on Windows but printer is not used right now
-// and red CI is making it harder to process other bugs, so ignore until
-// we get around to fixing them.package printer
-
 package printer
 
 import (
@@ -52,6 +47,13 @@ func TestFiles(t *testing.T) {
 			check(t, source, golden)
 		})
 	}
+}
+
+// Keep CRLF line endings
+func TestCRLF(t *testing.T) {
+	source := filepath.Join(dataDir, "comment_crlf.input")
+	golden := filepath.Join(dataDir, "comment_crlf.golden")
+	check(t, source, golden)
 }
 
 func check(t *testing.T, source, golden string) {
@@ -104,8 +106,8 @@ func diff(aname, bname string, a, b []byte) error {
 	for i := 0; i < len(a) && i < len(b); i++ {
 		ch := a[i]
 		if ch != b[i] {
-			fmt.Fprintf(&buf, "\n%s:%d:%d: %s", aname, line, i-offs+1, lineAt(a, offs))
-			fmt.Fprintf(&buf, "\n%s:%d:%d: %s", bname, line, i-offs+1, lineAt(b, offs))
+			fmt.Fprintf(&buf, "\n%s:%d:%d: %q", aname, line, i-offs+1, lineAt(a, offs))
+			fmt.Fprintf(&buf, "\n%s:%d:%d: %q", bname, line, i-offs+1, lineAt(b, offs))
 			fmt.Fprintf(&buf, "\n\n")
 			break
 		}
